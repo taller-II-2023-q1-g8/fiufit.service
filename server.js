@@ -20,8 +20,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
 
 // mongo
-const uri =
-  "mongodb+srv://agutson:ALk4ptPouruMKDWO@services.hgdwmtd.mongodb.net";
+const uri = process.env.mongoDBURL;
+if (!uri) exit(0);
 const client = new MongoClient(uri);
 const servicesRef = client.db("services").collection("services");
 
@@ -71,7 +71,7 @@ async function main() {
       }
     });
 
-    app.get("/add", async (req, res) => {
+    app.post("/add", async (req, res) => {
       try {
         const { name, description } = req.query;
 
@@ -99,13 +99,13 @@ async function main() {
       }
     });
 
-    app.get("/activate/:serviceName", async (req, res) => {
+    app.put("/activate/:serviceName", async (req, res) => {
       const { serviceName } = req.params;
       activateService(serviceName);
       res.json({ message: `Servicio ${serviceName} activado` });
     });
 
-    app.get("/deactivate/:serviceName", async (req, res) => {
+    app.put("/deactivate/:serviceName", async (req, res) => {
       const { serviceName } = req.params;
       deactivateService(serviceName);
       res.json({ message: `Servicio ${serviceName} desactivado` });
