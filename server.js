@@ -1,65 +1,137 @@
-let express = require('express');
-let path = require('path');
-let logger = require('morgan');
-const cors = require('cors');
-const users_routes = require("./routes/users_routes")
-const metrics_routes = require("./routes/goals_and_metrics_routes")
-const messages_routes = require('./routes/messages_routes');
-const goals_routes = require("./routes/goals_and_metrics_routes")
-const plans_routes = require("./routes/plans_routes")
-const setupSwagger = require('./middleware/express-jsdoc-swagger');
-const cors_options = {
-  origin: "*"
-}
+const MongoClient = require("mongodb").MongoClient;
 
+let express = require("express");
+let path = require("path");
+let logger = require("morgan");
+const cors = require("cors");
+
+// express
 let app = express();
 const port = 3000;
 
-setupSwagger(app);
+const cors_options = {
+  origin: "*",
+};
 
-app.use(logger('dev'));
+app.use(logger("dev"));
 app.use(cors(cors_options));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, "public")));
 
+// mongo
+const uri =
+  "mongodb+srv://agutson:ALk4ptPouruMKDWO@services.hgdwmtd.mongodb.net";
+const client = new MongoClient(uri);
+const servicesRef = client.db("services").collection("services");
 
-//Routers
-app.use('/user', users_routes.router)
-app.use('/messages', messages_routes.router)
+const addService = async (newService) =>
+  await servicesRef.insertOne(newService);
 
-app.use('/plans', plans_routes.router)
-app.use('/exercises', plans_routes.router)
-app.use('/multimedias', plans_routes.router)
-app.use('/trainers', plans_routes.router)
-app.use('/athletes', plans_routes.router)
+const activateService = async (serviceName) =>
+  await servicesRef.updateOne(
+    { name: serviceName },
+    { $set: { state: "active" } }
+  );
 
-app.use('/metrics', metrics_routes.router)
-app.use('/goals', goals_routes.router)
+const deactivateService = async (serviceName) =>
+  await servicesRef.updateOne(
+    { name: serviceName },
+    { $set: { state: "inactive" } }
+  );
 
+const listServices = async () => await servicesRef.find().toArray();
 
-/**
- * GET /
- * @summary Documentación Ejemplo
- * @security basicAuth
- * @tags Microservicios
- * @return {object} 200 - Éxito
- * @return {object} 403 - Error
- * @example response - 200 - Éxito
- * [
- *   {
- *     "message": "Hello World!"
- *   }
- * ]
- */
-app.get('/', (req, res) => {
-  res.json({
-    message: 'Hello World!'
-  })
-})
+async function main() {
+  try {
+    await client.connect();
 
-app.listen(port, () => {
-    console.log(`Gateway listening on port ${port}`)
-})
+    // endpoints
+    app.get("/", (req, res) => {
+      res.json({
+        message: "Hello World!",
+      });
+    });
 
-module.exports = app;
+    // const databases = await client.db().admin().listDatabases();
+    // console.log(databases);
+
+    // await deactivateService("Users");
+    // const services = await listServices();
+    // console.log({ services });
+    app.get("/list/", async (req, res) => {
+      try {
+        const services = await listServices();
+        res.json({ services });
+      } catch (error) {
+        console.error("Error al obtener la lista de servicios:", error);
+        res
+          .status(500)
+          .json({ error: "Error al obtener la lista de servicios" });
+      }
+    });
+
+    app.get("/add", async (req, res) => {
+      try {
+        const { name, description } = req.query;
+
+        if (!name || !description) {
+          return res
+            .status(400)
+            .json({ error: "Name and description are required" });
+        }
+
+        const newService = {
+          name,
+          description,
+          state: "active",
+        };
+
+        addService(newService);
+
+        res.json({
+          message: "Servicio agregado correctamente",
+          service: newService,
+        });
+      } catch (error) {
+        console.error("Error al agregar servicio:", error);
+        res.status(500).json({ error: "Error al agregar servicio" });
+      }
+    });
+
+    app.get("/activate/:serviceName", async (req, res) => {
+      const { serviceName } = req.params;
+      activateService(serviceName);
+      res.json({ message: `Servicio ${serviceName} activado` });
+    });
+
+    app.get("/deactivate/:serviceName", async (req, res) => {
+      const { serviceName } = req.params;
+      deactivateService(serviceName);
+      res.json({ message: `Servicio ${serviceName} desactivado` });
+    });
+
+    const server = app.listen(port, () => {
+      console.log(`Gateway listening on port ${port}`);
+    });
+
+    process.on("SIGINT", async () => {
+      try {
+        await server.close();
+        await client.close();
+        console.log("\n Server and MongoDB connection closed.");
+        process.exit(0);
+      } catch (err) {
+        console.error(
+          "Error al cerrar el servidor o la conexión a la base de datos:",
+          err
+        );
+        process.exit(1);
+      }
+    });
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+main().catch(console.error);
