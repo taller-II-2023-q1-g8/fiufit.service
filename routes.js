@@ -3,6 +3,15 @@ const crypto = require("crypto");
 // Helper function to generate an API key
 const generateApiKey = () => {
   const apiKey = crypto.randomBytes(16).toString("hex");
+<<<<<<< Updated upstream
+=======
+  console.log({
+    crypto,
+    randomBytes: crypto.randomBytes(16),
+    toString: crypto.randomBytes(16).toString("hex"),
+    apiKey,
+  });
+>>>>>>> Stashed changes
   return apiKey;
 };
 
@@ -53,11 +62,20 @@ function setupRoutes(app, client) {
       }
 
       const apiKey = generateApiKey();
+<<<<<<< Updated upstream
       const newService = {
         name,
         description,
         state: "active",
         apiKey,
+=======
+      console.log({ apiKey });
+      const newService = {
+        apiKey,
+        description,
+        name,
+        state: "active",
+>>>>>>> Stashed changes
       };
 
       await servicesRef.insertOne(newService);
