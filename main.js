@@ -20,8 +20,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
 
 // mongo
-//const uri = process.env.mongoDBURL;
-const uri = "mongodb+srv://agutson:ALk4ptPouruMKDWO@services.hgdwmtd.mongodb.net";
+const uri = process.env.mongoDBURL;
+//const uri = "mongodb+srv://agutson:ALk4ptPouruMKDWO@services.hgdwmtd.mongodb.net";
 if (!uri) {
     console.log("No se ha encontrado la URL de la base de datos");
     process.exit(0);

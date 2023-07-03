@@ -64,13 +64,13 @@ function setupRoutes(app, client) {
       }
     });
   
-    app.get("/activate/:serviceName", async (req, res) => {
+    app.put("/activate/:serviceName", async (req, res) => {
       const { serviceName } = req.params;
       activateService(serviceName);
       res.json({ message: `Servicio ${serviceName} activado` });
     });
   
-    app.get("/deactivate/:serviceName", async (req, res) => {
+    app.put("/deactivate/:serviceName", async (req, res) => {
       const { serviceName } = req.params;
       deactivateService(serviceName);
       res.json({ message: `Servicio ${serviceName} desactivado` });
