@@ -38,7 +38,7 @@ async function main() {
     setupRoutes(app, client);
 
     const server = app.listen(port, () => {
-      console.log(`Gateway listening on port ${port}`);
+      console.log(`Service Handler working and listening on port ${port}`);
     });
 
     process.on("SIGINT", async () => {
