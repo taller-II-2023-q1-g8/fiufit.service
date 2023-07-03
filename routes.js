@@ -42,7 +42,7 @@ function setupRoutes(app, client) {
   app.post("/add", async (req, res) => {
     try {
       console.log({ body: req?.body });
-      const { name, description } = req.body;
+      const { name, description } = req.query;
 
       console.log({ name, description });
 
