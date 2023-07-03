@@ -1,3 +1,5 @@
+const setupRoutes = require("./routes");
+
 const MongoClient = require("mongodb").MongoClient;
 
 let express = require("express");
@@ -29,7 +31,6 @@ if (!uri) {
 const client = new MongoClient(uri);
 const servicesRef = client.db("services").collection("services");
 
-const setupRoutes = require("./routes");
 
 async function main() {
   try {
