@@ -4,24 +4,35 @@ const generateApiKey = () => nanoid(32);
 
 function setupRoutes(app, client) {
   const servicesRef = client.db("services").collection("services");
+  const keysRef = client.db("services").collection("keys");
 
-  const activateService = async (serviceName) =>
+  const activateService = async (serviceName) => {
     await servicesRef.updateOne(
       { name: serviceName },
       { $set: { state: "active" } }
     );
-
-  const deactivateService = async (serviceName) =>
+    await keysRef.updateOne(
+      { name: serviceName },
+      { $set: {state: "allowed"} }
+    );
+  }
+    
+  const deactivateService = async (serviceName) => {
     await servicesRef.updateOne(
       { name: serviceName },
       { $set: { state: "inactive" } }
     );
-
+    await keysRef.updateOne(
+      { name: serviceName },
+      { $set: {state: "blocked"} }
+    );
+  }
+    
   const listServices = async () => await servicesRef.find().toArray();
 
   app.get("/", (req, res) => {
     res.json({
-      message: "Hello World!",
+      message: "Service Handler up and running",
     });
   });
 
@@ -59,6 +70,7 @@ function setupRoutes(app, client) {
       };
 
       await servicesRef.insertOne(newService);
+      await keysRef.insertOne({name, apiKey, state: "allowed"});
 
       res.json({
         message: "Servicio agregado correctamente",
