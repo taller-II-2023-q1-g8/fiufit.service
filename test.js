@@ -1,16 +1,15 @@
-
-const axios = require("axios");
-
-const url = "http://localhost:3000/add";
-const data = {
-  name: "Prueba",
-  description: "Descripción0",
+const payload = {
+  name: "Prueba11111",
+  description: "Descripción02"
 };
 
-axios.post(url, data)
-  .then((response) => {
-    console.log(response.data);
-  })
-  .catch((error) => {
-    console.error(error);
-  });
+fetch("http://localhost:3002/add?name=Test223&description=1123535", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify(payload)
+})
+  .then(response => response.json())
+  .then(data => console.log(data))
+  .catch(error => console.error(error));

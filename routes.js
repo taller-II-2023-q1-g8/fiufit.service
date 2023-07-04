@@ -1,7 +1,6 @@
 const { nanoid } = require("nanoid");
 
 const generateApiKey = () => nanoid(32);
-//import crypto from "crypto-js";
 
 function setupRoutes(app, client) {
   const servicesRef = client.db("services").collection("services");
@@ -51,6 +50,7 @@ function setupRoutes(app, client) {
 
       const apiKey = generateApiKey();
       console.log({apiKey});
+
       const newService = {
         name,
         description,
