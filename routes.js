@@ -13,7 +13,7 @@ function setupRoutes(app, client) {
     );
     await keysRef.updateOne(
       { name: serviceName },
-      { $set: {state: "allowed"} }
+      { $set: {state: "valid"} }
     );
   }
     
@@ -29,6 +29,21 @@ function setupRoutes(app, client) {
   }
     
   const listServices = async () => await servicesRef.find().toArray();
+
+  const validateKey = async (apiKey) => {
+    const key = await keysRef.findOne({apiKey});
+    if (key) {
+      if (key.state === "valid") {
+        return true;
+      } else {
+        console.log("key", apiKey, "is not valid");
+        return false;
+      }
+    } else {
+      console.log("key", apiKey, "not found");
+      return false;
+    }
+  }
 
   app.get("/", (req, res) => {
     res.json({
@@ -70,7 +85,7 @@ function setupRoutes(app, client) {
       };
 
       await servicesRef.insertOne(newService);
-      await keysRef.insertOne({name, apiKey, state: "allowed"});
+      await keysRef.insertOne({name, apiKey, state: "valid"});
 
       res.json({
         message: "Servicio agregado correctamente",
@@ -80,6 +95,13 @@ function setupRoutes(app, client) {
       console.error("Error al agregar servicio:", error);
       res.status(500).json({ error: "Error al agregar servicio" });
     }
+  });
+
+  app.post("/validate", async (req, res) => {
+    const { apiKey } = req.body;
+    (await validateKey(apiKey)) ?
+    res.status(200).json({ message: "Key is valid" }) :
+    res.status(401).json({ message: "Key is not valid" });
   });
 
   app.put("/activate/:serviceName", async (req, res) => {
