@@ -89,6 +89,7 @@ function setupRoutes(app, client) {
 
   app.get("/services/validate", async (req, res) => {
     const { apiKey } = req.body;
+    console.log({apiKey});
     (await validateKey(apiKey)) ?
     res.status(200).json({ message: "Key is valid" }) :
     res.status(401).json({ message: "Key is not valid" });
