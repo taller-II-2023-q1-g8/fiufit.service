@@ -95,7 +95,7 @@ function setupRoutes(app, client) {
     res.status(401).json({ message: "Key is not valid" });
   });
 
-  app.get("/services/state/:service", async (req, res) => {
+  app.get("/services/state/:serviceName", async (req, res) => {
     const { serviceName } = req.params;
     console.log({serviceName});
     const sstate = servicesRef.findOne({name: serviceName}).state;
