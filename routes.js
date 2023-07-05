@@ -12,10 +12,10 @@ function setupRoutes(app, client) {
     );
   }
     
-  const deactivateService = async (serviceName) => {
+  const blockService = async (serviceName) => {
     await servicesRef.updateOne(
       { name: serviceName },
-      { $set: { state: "inactive" } }
+      { $set: { state: "blocked" } }
     );
   }
     
@@ -101,10 +101,10 @@ function setupRoutes(app, client) {
     res.json({ message: `Servicio ${serviceName} activado` });
   });
 
-  app.put("/deactivate/:serviceName", async (req, res) => {
+  app.put("/block/:serviceName", async (req, res) => {
     const { serviceName } = req.params;
-    deactivateService(serviceName);
-    res.json({ message: `Servicio ${serviceName} desactivado` });
+    blockService(serviceName);
+    res.json({ message: `Servicio ${serviceName} bloqueado` });
   });
 }
 
