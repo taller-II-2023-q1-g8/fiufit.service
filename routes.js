@@ -89,7 +89,7 @@ function setupRoutes(app, client) {
 
   app.get("/services/validate", async (req, res) => {
     const { apiKey } = req.body;
-    console.log({apiKey});
+    console.log({req, apiKey});
     (await validateKey(apiKey)) ?
     res.status(200).json({ message: "Key is valid" }) :
     res.status(401).json({ message: "Key is not valid" });
@@ -97,7 +97,7 @@ function setupRoutes(app, client) {
 
   app.get("/services/state/:service", async (req, res) => {
     const { serviceName } = req.params;
-    console.log({apiKey});
+    console.log({serviceName});
     const sstate = servicesRef.findOne({name: serviceName}).state;
     (sstate === "active") ?
     res.status(200).json({message: serviceName + "is active"}) :
