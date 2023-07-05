@@ -42,7 +42,7 @@ function setupRoutes(app, client) {
     });
   });
 
-  app.get("/list", async (req, res) => {
+  app.get("/services/list", async (req, res) => {
     try {
       const services = await listServices();
       res.json({ services });
@@ -52,7 +52,7 @@ function setupRoutes(app, client) {
     }
   });
 
-  app.post("/add", async (req, res) => {
+  app.post("/services/add", async (req, res) => {
     try {
       console.log({ body: req?.body });
       const { name, description } = req.query;
@@ -87,7 +87,7 @@ function setupRoutes(app, client) {
     }
   });
 
-  app.get("/validate", async (req, res) => {
+  app.get("/services/validate", async (req, res) => {
     const { apiKey } = req.body;
     console.log({apiKey});
     (await validateKey(apiKey)) ?
@@ -95,7 +95,7 @@ function setupRoutes(app, client) {
     res.status(401).json({ message: "Key is not valid" });
   });
 
-  app.get("/state/:service", async (req, res) => {
+  app.get("/services/state/:service", async (req, res) => {
     const { serviceName } = req.params;
     console.log({apiKey});
     const sstate = servicesRef.findOne({name: serviceName}).state;
@@ -104,13 +104,13 @@ function setupRoutes(app, client) {
     res.status(211).json({message: serviceName + "is currently inactive"});
   });
 
-  app.put("/activate/:serviceName", async (req, res) => {
+  app.put("/services/activate/:serviceName", async (req, res) => {
     const { serviceName } = req.params;
     activateService(serviceName);
     res.json({ message: `Servicio ${serviceName} activado` });
   });
 
-  app.put("/block/:serviceName", async (req, res) => {
+  app.put("/services/block/:serviceName", async (req, res) => {
     const { serviceName } = req.params;
     blockService(serviceName);
     res.json({ message: `Servicio ${serviceName} bloqueado` });
