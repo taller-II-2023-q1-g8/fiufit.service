@@ -4,16 +4,11 @@ const generateApiKey = () => nanoid(32);
 
 function setupRoutes(app, client) {
   const servicesRef = client.db("services").collection("services");
-  const keysRef = client.db("services").collection("keys");
 
   const activateService = async (serviceName) => {
     await servicesRef.updateOne(
       { name: serviceName },
       { $set: { state: "active" } }
-    );
-    await keysRef.updateOne(
-      { name: serviceName },
-      { $set: {state: "valid"} }
     );
   }
     
@@ -22,25 +17,21 @@ function setupRoutes(app, client) {
       { name: serviceName },
       { $set: { state: "inactive" } }
     );
-    await keysRef.updateOne(
-      { name: serviceName },
-      { $set: {state: "blocked"} }
-    );
   }
     
   const listServices = async () => await servicesRef.find().toArray();
 
   const validateKey = async (apiKey) => {
-    const key = await keysRef.findOne({apiKey});
-    if (key) {
-      if (key.state === "valid") {
+    const service = await servicesRef.findOne({apiKey});
+    if (service) {
+      if (service.state === "active") {
         return true;
       } else {
         console.log("key", apiKey, "is not valid");
         return false;
       }
     } else {
-      console.log("key", apiKey, "not found");
+      console.log("key", apiKey, "does not correspond to an existing service/app");
       return false;
     }
   }
@@ -85,7 +76,6 @@ function setupRoutes(app, client) {
       };
 
       await servicesRef.insertOne(newService);
-      await keysRef.insertOne({name, apiKey, state: "valid"});
 
       res.json({
         message: "Servicio agregado correctamente",
