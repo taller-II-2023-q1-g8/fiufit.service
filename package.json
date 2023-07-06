@@ -6,7 +6,8 @@
   "scripts": {
   "test": "echo \"Error: no test specified\" && exit 1",
   "lint": "eslint .",
-  "test:coverage": "npx mocha --require mocha-steps --exit --reporter mocha-junit-reporter --reporter-options mochaFile=./coverage/test-results.xml --reporter-options mochaFile=./coverage/lcov-report/cobertura.xml"
+  "test": "nyc --reporter=lcov mocha test.js",
+  "coverage": "nyc report --reporter=lcov && codecov"
   },
   "author": "",
   "license": "ISC",
