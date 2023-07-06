@@ -40,7 +40,6 @@ const mockClient = {
   }),
 };
 
-process.on("SIGINT", () => {});
 const app = require("express")();
 setupRoutes(app, mockClient, false);
 
