@@ -5,7 +5,7 @@ Microservicio para adminsitrar los servicios usados en el proyecto FiuFit
 # [Documentación Interactiva de la API](https://service-handler.onrender.com/api-docs)
 
 # Ejecución local
-node main
+docker-compose up --build
 
 # Test
 npx mocha test.js
