@@ -26,8 +26,11 @@ const mockCollection = {
     } else if (apiKey) {
       service = mockCollection.data.find((item) => item.apiKey === apiKey);
     }
-    const sstate = service ? service.state : undefined;
-    return Promise.resolve({ state: sstate });
+    if (!service) {
+      return Promise.resolve(null);
+    } else {
+      return Promise.resolve({ state: service.state });
+    }
   },
   insertOne: (item) => {
     mockCollection.data.push(item);
@@ -152,16 +155,16 @@ describe("Main", () => {
         done();
       });
   });
-  
-  it("should return 'currently inactive' for a non-existent service name", (done) => {
-    const serviceName = "Non-existent Service";
+
+  it("should return 'does not correspond to an existing service/app' for an service that doesn't exist", (done) => {
+    const serviceName = "Nonexistent Service";
   
     request(app)
       .get(`/services/state/${serviceName}`)
-      .expect(211)
+      .expect(212)
       .end((err, res) => {
         expect(err).to.be.null;
-        expect(res.body.message).to.equal(`${serviceName} is currently inactive`);
+        expect(res.body.message).to.equal(`${serviceName} does not correspond to an existing service/app`);
         done();
       });
   });
