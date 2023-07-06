@@ -45,9 +45,7 @@ setupRoutes(app, mockClient, false);
 
 describe("Main", () => {
   let server;
-  let originalEnableLogging;
   before((done) => {
-    originalEnableLogging = process.env.ENABLE_LOGGING;
     process.env.ENABLE_LOGGING = 0;
     server = app.listen(3000, () => {
       console.log("Service Handler working and listening on port 3000");
@@ -56,10 +54,9 @@ describe("Main", () => {
   });
 
   after((done) => {
-    //process.env.ENABLE_LOGGING = originalEnableLogging;
     server.close(() => {
       console.log("\nTesting Finished.");
-      process.kill(process.pid, "SIGINT");
+      process.exit(0);
       done();
     });
   });
