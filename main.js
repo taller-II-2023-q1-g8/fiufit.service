@@ -6,6 +6,7 @@ let express = require("express");
 let path = require("path");
 let logger = require("morgan");
 const cors = require("cors");
+const swaggerJsdoc = require('swagger-jsdoc');
 
 // express
 let app = express();
@@ -25,7 +26,7 @@ app.use(express.static(path.join(__dirname, "public")));
 //const uri = process.env.mongoDBURL;
 const uri = "mongodb+srv://agutson:ALk4ptPouruMKDWO@services.hgdwmtd.mongodb.net";
 if (!uri) {
-    console.log("No se ha encontrado la URL de la base de datos");
+      console.log("No se ha encontrado la URL de la base de datos");
     process.exit(0);
 } 
 const client = new MongoClient(uri);
@@ -39,25 +40,25 @@ async function main() {
     setupRoutes(app, client);
 
     const server = app.listen(port, () => {
-      console.log(`Service Handler working and listening on port ${port}`);
+        console.log(`Service Handler working and listening on port ${port}`);
     });
 
     process.on("SIGINT", async () => {
         try {
           await server.close();
           await client.close();
-          console.log("\n Server and MongoDB connection closed.");
+            console.log("\n Server and MongoDB connection closed.");
           process.exit(0);
         } catch (err) {
-          console.error(
-            "Error al cerrar el servidor o la conexión a la base de datos:",
-            err
-          );
+            console.error(
+              "Error al cerrar el servidor o la conexión a la base de datos:",
+              err
+            );
           process.exit(1);
         }
       });
     } catch (err) {
-        console.error(err);
+          console.error(err);
       }
     }
 
