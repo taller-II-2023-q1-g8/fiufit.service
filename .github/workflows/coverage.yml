@@ -19,10 +19,9 @@ jobs:
           node-version: 14
 
       - name: Run tests with coverage
-        run: npm run test:coverage
+        run: npm run test
 
       - name: Upload coverage report to Codecov
-        uses: codecov/codecov-action@v2
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          file: ./coverage/lcov-report/cobertura.xml
+        run: npm run coverage
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
