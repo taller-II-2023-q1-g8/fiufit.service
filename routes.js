@@ -250,9 +250,12 @@ app.get("/", (req, res) => {
     const { apiKey } = req.body;
     if (enableLogging)
       console.log({apiKey});
-    (await validateKey(apiKey)) ?
-    res.status(200).json({ message: "Key is valid" }) :
-    res.status(401).json({ message: "Key is not valid" });
+      const valid = await validateKey(apiKey);
+      if (valid) {
+        res.status(200).json({ message: "Key is valid" });
+      } else {
+        res.status(401).json({ message: "Key is not valid" });
+      }
   });
 
   /**
