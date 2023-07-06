@@ -63,4 +63,8 @@ async function main() {
     }
 
 
-    main().catch(console.error);
+    try {
+      main()
+    } catch (err) {
+      console.error(err);
+    }
