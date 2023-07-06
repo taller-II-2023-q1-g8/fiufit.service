@@ -19,7 +19,7 @@ jobs:
           node-version: 14
 
       - name: Run tests and generate coverage
-        run: sudo npx nyc --reporter=lcovonly mocha test.js
+        run: npx mocha test.js
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2
