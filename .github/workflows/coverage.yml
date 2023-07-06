@@ -18,10 +18,16 @@ jobs:
         with:
           node-version: 14
 
-      - name: Run tests and generate coverage
-        run: npx mocha test.js
+      - name: Run tests with coverage
+        run: |
+          npx mocha --require mocha-steps --exit \
+            --reporter mocha-junit-reporter \
+            --reporter-options mochaFile=./coverage/test-results.xml \
+            --reporter mocha-junit-reporter \
+            --reporter-options mochaFile=./coverage/lcov-report/cobertura.xml
 
-      - name: Upload coverage to Codecov
+      - name: Upload coverage report to Codecov
         uses: codecov/codecov-action@v2
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./coverage/lcov-report/cobertura.xml
