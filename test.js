@@ -2,7 +2,8 @@ const chai = require("chai");
 const expect = chai.expect;
 const request = require("supertest");
 
-const setupRoutes = require("./routes");
+const setupRoutes = require("./routes").setupRoutes;
+const validateKey = require("./routes").validateKey;
 
 // DB Mock
 const mockCollection = {
@@ -46,12 +47,11 @@ const mockClient = {
 const app = require("express")();
 setupRoutes(app, mockClient, false);
 
-describe("Main", () => {
+describe("Tests", () => {
   let server;
   before((done) => {
     process.env.ENABLE_LOGGING = 0;
     server = app.listen(3000, () => {
-      console.log("Service Handler working and listening on port 3000");
       done();
     });
   });
@@ -169,40 +169,55 @@ describe("Main", () => {
       });
   });
 
-  it("should return 'Key is valid' for a valid API key", (done) => {
-    const apiKey = "valid-api-key";
-  
+  it("should return true for key corresponding to an active service", (done) => {
+    const apiKey = 'valid-api-key';
+
     mockCollection.data.push({
-      name: "Test Service",
+      name: "Active Key service",
       state: "active",
       apiKey: apiKey,
     });
-  
-    request(app)
-      .post("/services/validate")
-      .send({ apiKey: apiKey })
-      .expect(200)
-      .end((err, res) => {
-        expect(err).to.be.null;
-        expect(res.body.message).to.equal("Key is valid");
-        done();
-      });
+
+    validateKey(apiKey, false, mockCollection)
+    .then((isValid) => {
+      expect(isValid).to.be.true;
       done();
+    })
+    .catch((error) => {
+      done(error);
+    });
   });
   
-  it("should return 'Key is not valid' for an invalid API key", (done) => {
-    const apiKey = "invalid-api-key";
+  it("should return false for a key corresponding to a blocked service", (done) => {
+    const apiKey = 'invalid-api-key';
+
+    mockCollection.data.push({
+      name: "Blocked service",
+      state: "blocked",
+      apiKey: apiKey,
+    });
   
-    request(app)
-      .post("/services/validate")
-      .send({ apiKey: apiKey })
-      .expect(401)
-      .end((err, res) => {
-        expect(err).to.be.null;
-        expect(res.body.message).to.equal("Key is not valid");
-        done();
-      });
+    validateKey(apiKey, false, mockCollection)
+    .then((isValid) => {
+      expect(isValid).to.be.false;
       done();
+    })
+    .catch((error) => {
+      done(error);
+    });
+  });
+
+  it("should return false for a key not corresponding to a service", (done) => {
+    const apiKey = 'non-existent-api-key';
+  
+    validateKey(apiKey, false, mockCollection)
+    .then((isValid) => {
+      expect(isValid).to.be.false;
+      done();
+    })
+    .catch((error) => {
+      done(error);
+    });
   });
 
   it("should activate a non-active service", (done) => {

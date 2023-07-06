@@ -4,6 +4,23 @@ const swaggerUi = require("swagger-ui-express");
 
 const generateApiKey = () => nanoid(32);
 
+async function validateKey(apiKey, enableLogging = true, servicesRef) {
+  const service = await servicesRef.findOne({apiKey});
+  if (service) {
+    if (service.state === "active") {
+      return true;
+    } else {
+      if (enableLogging)
+        console.log("key", apiKey, "is not valid");
+      return false;
+    }
+  } else {
+    if (enableLogging)
+      console.log("key", apiKey, "does not correspond to an existing service/app");
+    return false;
+  }
+}
+
 function setupRoutes(app, client, enableLogging = true) {
   const swaggerOptions = {
     definition: {
@@ -64,22 +81,7 @@ function setupRoutes(app, client, enableLogging = true) {
     
   const listServices = async () => await servicesRef.find().toArray();
 
-  const validateKey = async (apiKey) => {
-    const service = await servicesRef.findOne({apiKey});
-    if (service) {
-      if (service.state === "active") {
-        return true;
-      } else {
-        if (enableLogging)
-          console.log("key", apiKey, "is not valid");
-        return false;
-      }
-    } else {
-      if (enableLogging)
-        console.log("key", apiKey, "does not correspond to an existing service/app");
-      return false;
-    }
-  }
+
 
  /**
  * @openapi
@@ -250,7 +252,7 @@ app.get("/", (req, res) => {
     const { apiKey } = req.body;
     if (enableLogging)
       console.log({apiKey});
-      (await validateKey(apiKey)) ?
+      (await validateKey(apiKey, true, servicesRef)) ?
     res.status(200).json({ message: "Key is valid" }) :
     res.status(401).json({ message: "Key is not valid" });
   });
@@ -387,4 +389,8 @@ app.get("/", (req, res) => {
   app.swaggerSpec = swaggerSpec;
 }
 
-module.exports = setupRoutes;
+module.exports = {
+  setupRoutes,
+  validateKey,
+};
+

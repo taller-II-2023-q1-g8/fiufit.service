@@ -1,4 +1,4 @@
-const setupRoutes = require("./routes");
+const setupRoutes = require("./routes").setupRoutes;
 
 const MongoClient = require("mongodb").MongoClient;
 

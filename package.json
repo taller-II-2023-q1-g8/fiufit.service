@@ -1,13 +1,12 @@
 {
-  "name": "api-gateway",
+  "name": "service-manager",
   "version": "1.0.0",
-  "description": "Api gateway with NodeJs and Express",
+  "description": "Service Manager Microservice with NodeJs and Express",
   "main": "index.js",
   "scripts": {
-  "test": "echo \"Error: no test specified\" && exit 1",
-  "lint": "eslint .",
-  "test": "nyc --reporter=lcov mocha test.js",
-  "coverage": "nyc report --reporter=lcov && codecov"
+    "lint": "eslint .",
+    "test": "nyc --reporter=lcov mocha test.js",
+    "coverage": "nyc report --reporter=lcov && codecov"
   },
   "author": "",
   "license": "ISC",
