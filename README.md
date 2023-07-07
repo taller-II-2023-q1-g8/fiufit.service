@@ -105,7 +105,7 @@ Note: When running this microservice locally you must ensure to have the enviorm
    ```sh
    git clone https://github.com/taller-II-2023-q1-g8/fiufit.fiuba.user.api.git
    ```
-2. Run App and Database with Docker-Compose
+2. Run App with Docker-Compose
    ```sh
    docker-compose up --build
    ```
