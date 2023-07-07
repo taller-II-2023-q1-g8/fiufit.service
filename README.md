@@ -95,19 +95,15 @@ This is an example of how you may give instructions on setting up your project l
 To get a local copy up and running follow these simple example steps.   
 Note: When running this microservice locally you must ensure to have the enviorment variable: __mongoDBURL__=_yourMongoDBDatabaseUrl_ with the url to your database.
 
-### Prerequisites
-
-* Docker-Compose
-
 ### Installation
 
 1. Clone the repository
    ```sh
-   git clone https://github.com/taller-II-2023-q1-g8/fiufit.fiuba.user.api.git
+   git clone https://github.com/taller-II-2023-q1-g8/fiufit.service
    ```
-2. Run App with Docker-Compose
+2. Run App with Node
    ```sh
-   docker-compose up --build
+   node main
    ```
 3. This will have the microservice running on localhost:3000
 
